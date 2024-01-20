@@ -13,6 +13,9 @@ int len = 4;
 int score = 0;
 boolean gameJalan = false;
 
+PImage snakeTexture; // Ini hapus ajah klo gmw make texture
+PImage foodTexture; // Ini hapus ajah klo gmw make texture
+
 void setup() {
   size(1080, 720);
   w = width / size;
@@ -20,6 +23,9 @@ void setup() {
 
   pos = new PVector(w / 2, h / 2);
   food = new PVector(int(random(w)), int(random(h)));
+
+  snakeTexture = loadImage("snakeskin.jpeg"); // Ini hapus ajah klo gmw make texture
+  foodTexture = loadImage("Tikus.jpg"); // Ini hapus ajah klo gmw make texture
 
   noStroke();
   fill(0);
@@ -54,8 +60,11 @@ void drawScore() {
 }
 
 void drawFood() {
-  fill(255, 0, 0);
-  rect(food.x * size, food.y * size, size, size);
+  float foodX = food.x * size + size / 2;
+  float foodY = food.y * size + size / 2;
+
+  imageMode(CENTER);
+  image(foodTexture, foodX, foodY, size, size);
 }
 
 void newFood() {
@@ -63,16 +72,16 @@ void newFood() {
 }
 
 void drawSnake() {
-  fill(50, 150, 50);
-
   float headX = pos.x * size + size / 2;
   float headY = pos.y * size + size / 2;
 
-  arc(headX, headY, size, size, PI, TWO_PI, PIE);
-  rect(pos.x * size, pos.y * size + size / 2, size, size / 2);
+  imageMode(CENTER);
+  image(snakeTexture, headX, headY, size, size / 2);
 
   for (int i = 0; i < snake.size(); i++) {
-    rect(snake.get(i).x * size, snake.get(i).y * size, size, size);
+    float snakeX = snake.get(i).x * size + size / 2;
+    float snakeY = snake.get(i).y * size + size / 2;
+    image(snakeTexture, snakeX, snakeY, size, size);
   }
 }
 
