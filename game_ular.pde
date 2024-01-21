@@ -15,6 +15,7 @@ boolean gameJalan = false;
 
 PImage snakeTexture; // Ini hapus ajah klo gmw make texture
 PImage foodTexture; // Ini hapus ajah klo gmw make texture
+PImage snakeHead;
 
 void setup() {
   size(1080, 720);
@@ -24,9 +25,10 @@ void setup() {
   pos = new PVector(w / 2, h / 2);
   food = new PVector(int(random(w)), int(random(h)));
 
-  snakeTexture = loadImage("snakeskin.jpeg"); // Ini hapus ajah klo gmw make texture
-  foodTexture = loadImage("Tikus.jpg"); // Ini hapus ajah klo gmw make texture
-
+  snakeTexture = loadImage("tikus.png"); // Ini hapus ajah klo gmw make texture
+  foodTexture = loadImage("tikus.png"); // Ini hapus ajah klo gmw make texture
+  snakeHead = loadImage("snakeHead.png");
+  
   noStroke();
   fill(0);
 }
@@ -62,7 +64,7 @@ void drawScore() {
 void drawFood() {
   float foodX = food.x * size + size / 2;
   float foodY = food.y * size + size / 2;
-
+  
   imageMode(CENTER);
   image(foodTexture, foodX, foodY, size, size);
 }
@@ -75,8 +77,24 @@ void drawSnake() {
   float headX = pos.x * size + size / 2;
   float headY = pos.y * size + size / 2;
 
+  // Hitung sudut rotasi berdasarkan arah kepala ular
+  float angle = 0;
+  if (dir.x == 1) {
+    angle = PI / 2; // 90 derajat
+  } else if (dir.x == -1) {
+    angle = -PI / 2; // -90 derajat
+  } else if (dir.y == 1) {
+    angle = PI; // 180 derajat
+  }
+
+  pushMatrix(); // Simpan matriks saat ini
+  translate(headX, headY); // Pindahkan pusat rotasi ke posisi kepala
+  rotate(angle); // Rotasi gambar sesuai arah kepala ular
+
   imageMode(CENTER);
-  image(snakeTexture, headX, headY, size, size / 2);
+  image(snakeHead, 0, 0, size, size);
+
+  popMatrix(); // Pulihkan matriks sebelumnya
 
   for (int i = 0; i < snake.size(); i++) {
     float snakeX = snake.get(i).x * size + size / 2;
