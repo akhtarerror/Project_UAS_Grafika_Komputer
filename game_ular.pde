@@ -20,14 +20,17 @@ int initialLength = 4;
 int score = 0;
 // status apakah permainan sedang berjalan atau tidak
 boolean isGameRunning = false;
+// status apakah game over atau tidak
+boolean gameOver = false;
 
-// gambar makanan dan kepala ular
+// gambar makanan, kepala ular, background
 PImage foodImage;
 PImage headImage;
+PImage backgroundImg;
 
 void setup() {
   // inisialisasi ukuran layar
-  size(1080, 720);
+  size(640, 448);
   // menghitung jumlah sel horizontal dan vertikal dalam grid
   gridWidth = width / cellSize;
   gridHeight = height / cellSize;
@@ -36,10 +39,11 @@ void setup() {
   headPosition = new PVector(gridWidth / 2, gridHeight / 2);
   foodPosition = new PVector(int(random(gridWidth)), int(random(gridHeight)));
 
-  // memuat gambar makanan dan kepala ular
+  // memuat gambar makanan, kepala ular, dan background
   foodImage = loadImage("mouse.png"); // Ganti dengan nama gambar makanan yang sesuai
   headImage = loadImage("snakeHead.png");
-  
+  backgroundImg = loadImage("rumput.png");
+
   // mengatur penggambaran
   noStroke();
   fill(0);
@@ -48,13 +52,13 @@ void setup() {
 void draw() {
   // logika utama permainan
   if (isGameRunning) {
-    background(200);
+    background(backgroundImg);
     drawSnake();
     drawFood();
     drawScore();
 
     // pembaruan ular setiap beberapa frame
-    if (frameCount % speed == 0) {
+    if (frameCount % (10 - speed) == 0) {
       updateSnake();
     }
   } else {
@@ -62,16 +66,23 @@ void draw() {
     background(255);
     fill(0);
     textSize(40);
-    textAlign(CENTER, CENTER); 
-    text("Snake Game", width / 2, height / 2 - 40);
-    textSize(20);
-    text("Klik untuk memulai", width / 2, height / 2 + 20);
+    textAlign(CENTER, CENTER);
+    if (!gameOver) {
+      text("Snake Game", width / 2, height / 2 - 40);
+      textSize(20);
+      text("Klik untuk memulai", width / 2, height / 2 + 20);
+    } else {
+      // Tampilkan pesan Game Over dan skor
+      text("Game Over", width / 2, height / 2 - 40);
+      textSize(20);
+      text("Skor: " + score, width / 2, height / 2 + 20);
+    }
   }
 }
 
 void drawScore() {
   // menggambar skor pemain
-  fill(0);
+  fill(255);
   textSize(20);
   text("Skor: " + score, 50, 20);
 }
@@ -80,7 +91,7 @@ void drawFood() {
   // menggambar makanan pada posisi yang tepat
   float foodX = foodPosition.x * cellSize + cellSize / 2;
   float foodY = foodPosition.y * cellSize + cellSize / 2;
-  
+
   imageMode(CENTER);
   image(foodImage, foodX, foodY, cellSize, cellSize);
 }
@@ -119,7 +130,7 @@ void drawSnake() {
   for (int i = 0; i < snake.size(); i++) {
     float snakeX = snake.get(i).x * cellSize + cellSize / 2;
     float snakeY = snake.get(i).y * cellSize + cellSize / 2;
-    
+
     // menggambar sel tubuh ular berupa lingkaran berwarna hijau gelap
     fill(63, 133, 44);
     ellipse(snakeX, snakeY, cellSize, cellSize);
@@ -150,8 +161,7 @@ void updateSnake() {
   // logika saat ular menabrak dirinya sendiri
   for (int i = 0; i < snake.size(); i++) {
     if (headPosition.x == snake.get(i).x && headPosition.y == snake.get(i).y) {
-      //gameOver();
-      resetGame();
+      gameOver();
     }
   }
 
@@ -159,13 +169,13 @@ void updateSnake() {
   if (headPosition.x < 0) {
     headPosition.x = gridWidth - 1;
   }
-  if (headPosition.x > gridWidth) {
+  if (headPosition.x >= gridWidth) {
     headPosition.x = 0;
   }
   if (headPosition.y < 0) {
     headPosition.y = gridHeight - 1;
   }
-  if (headPosition.y > gridHeight) {
+  if (headPosition.y >= gridHeight) {
     headPosition.y = 0;
   }
 }
@@ -179,11 +189,26 @@ void resetGame() {
   newFood();
   snake = new ArrayList<PVector>();
   score = 0;
+  gameOver = false;
+}
+
+void gameOver() {
+  isGameRunning = false;
+  gameOver = true;
+  // Menampilkan pesan Game Over
+  background(255);
+  fill(0);
+  textSize(40);
+  textAlign(CENTER, CENTER);
+  text("Game Over", width / 2, height / 2 - 40);
+  textSize(20);
+  text("Skor: " + score, width / 2, height / 2 + 20);
 }
 
 void mousePressed() {
   // memulai permainan saat pemain mengklik layar
   if (!isGameRunning) {
+    resetGame();
     isGameRunning = true;
   }
 }
